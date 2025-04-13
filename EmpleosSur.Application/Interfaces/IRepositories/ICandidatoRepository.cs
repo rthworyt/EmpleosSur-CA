@@ -10,8 +10,8 @@ namespace EmpleosSur.Application.Interfaces.IRepositories
 {
     public interface ICandidatoRepository : IRepository<Candidato>
     {
-        Task<Candidato> GetByIdDataCompletaAsync(int id);
-        Task<Candidato> GetByEmailAsync(string email);
-        Task<IEnumerable<Candidato>> GetByCiudadAsync(string ciudad);
+        Task<Candidato> GetAllDataCandidatoById(int id);
+        Task<Candidato> GetCandidatoByEmail(string email);
+        Task<IEnumerable<Candidato>> GetCandidatoByCiudad(string ciudad);
     }
 }

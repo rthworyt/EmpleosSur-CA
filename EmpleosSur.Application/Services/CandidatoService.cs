@@ -1,51 +1,60 @@
-﻿using EmpleosSur.Application.Interfaces.IServices;
+﻿using EmpleosSur.Application.Interfaces.IRepositories;
+using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Application.Services;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.Domain.Helpers;
 
-namespace EmpleosSur.Application.Services
+public class CandidatoService : Service<Candidato>, ICandidatoService
 {
-    public class CandidatoService : ICandidatoService
+    private readonly ICandidatoRepository _candidatoRepository;
+
+    public CandidatoService(ICandidatoRepository candidatoRepository)
+        : base(candidatoRepository)
     {
-        private readonly IRepository<Candidato> _repository;
+        _candidatoRepository = candidatoRepository;
+    }
 
-        public CandidatoService(IRepository<Candidato> repository)
-        {
-            _repository = repository;
-        }
+    public async Task<Candidato> GetCandidatoById(int id)
+    {
+        return await _candidatoRepository.GetByIdAsync(id);
+    }
 
-        public async Task<Candidato> GetCandidatoByEmailAsync(string email)
-        {
-            return (await _repository.GetAllAsync(c => ((Candidato)c).Email == email)).FirstOrDefault();
-        }
+    public async Task<Candidato> GetCandidatoByEmail(string email)
+    {
+        return await _candidatoRepository.GetCandidatoByEmail(email);
+    }
 
-        public async Task<OperationResult> CreateCandidatoAsync(Candidato candidato)
+    public async Task<OperationResult> CreateCandidato(Candidato candidato)
+    {
+        try
         {
-            if (string.IsNullOrEmpty(candidato.Descripcion))
-            {
-                candidato.Descripcion = "Descripción no disponible";
-            }
-            await _repository.CreateAsync(candidato);
+            await _candidatoRepository.CreateAsync(candidato);
             return OperationResult.SuccessResult();
         }
-
-        public async Task DeleteCandidatoAsync(int id)
+        catch (Exception ex)
         {
-            var candidato = await GetCandidatoByIdAsync(id);
-            if (candidato == null)
-            {
-                throw new Exception("El candidato no existe.");
-            }
-            await _repository.DeleteAsync(id);
+            return OperationResult.Failure($"Error al crear candidato: {ex.Message}");
         }
+    }
 
-        public async Task UpdateCandidatoAsync(Candidato candidato)
-        {
-            await _repository.UpdateAsync(candidato);
-        }
+    public async Task<OperationResult> DeleteCandidato(int id)
+    {
+        var candidato = await GetCandidatoById(id);
+        if (candidato == null)
+            return OperationResult.Failure("El candidato no existe.");
 
-        public async Task<Candidato> GetCandidatoByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
-        }
+        await _candidatoRepository.DeleteAsync(id);
+        return OperationResult.SuccessResult();
+    }
+
+    public async Task<OperationResult> UpdateCandidato(Candidato candidato)
+    {
+        await _candidatoRepository.UpdateAsync(candidato);
+        return OperationResult.SuccessResult();
+    }
+
+    public async Task<Candidato> GetAllDataCandidatoById(int id)
+    {
+        return await _candidatoRepository.GetAllDataCandidatoById(id);
     }
 }
