@@ -35,7 +35,7 @@ public class CandidatosController : ControllerBase
 
     // GET
     [HttpGet("email/{email}")]
-    public async Task<ActionResult<CandidatoDTO>> GetCandidatoByEmail(string email)
+    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
     {
         var candidato = await _candidatoService.GetCandidatoByEmailAsync(email);
 
@@ -44,13 +44,13 @@ public class CandidatosController : ControllerBase
             return NotFound();
         }
 
-        var candidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
+        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
         return Ok(candidatoDTO);
     }
 
     // GET
     [HttpGet("{id}")]
-    public async Task<ActionResult<CandidatoDTO>> GetCandidatoById(int id)
+    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoById(int id)
     {
         var candidato = await _candidatoService.GetCandidatoByIdAsync(id);
 
@@ -59,7 +59,7 @@ public class CandidatosController : ControllerBase
             return NotFound();
         }
 
-        var candidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
+        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
         return Ok(candidatoDTO);
     }
 

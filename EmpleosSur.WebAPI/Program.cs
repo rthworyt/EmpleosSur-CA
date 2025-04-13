@@ -10,7 +10,8 @@ using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+// Configuración de AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Configuración de Serilog
 Log.Logger = new LoggerConfiguration()
@@ -23,11 +24,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configuración de la base de datos
 builder.Services.AddDbContext<EmpleosSurDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
     sqlOptions => sqlOptions.EnableRetryOnFailure())
 );
 
+// Inyección de dependencias
 builder.Services.AddScoped<FakeDataGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -36,6 +39,7 @@ builder.Services.AddScoped<ICandidatoService, CandidatoService>();
 
 var app = builder.Build();
 
+// Configuración de Swagger en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

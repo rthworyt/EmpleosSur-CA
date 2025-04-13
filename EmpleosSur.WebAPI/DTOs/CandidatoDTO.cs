@@ -42,7 +42,6 @@ namespace EmpleosSur.WebAPI.DTOs
         [StringLength(500, ErrorMessage = "La descripción no puede exceder los 500 caracteres.")]
         public string Descripcion { get; set; }
 
-        //Validacion de mayoria de edad
         public static ValidationResult ValidarMayorDeEdad(
             DateTime fechaNacimiento,
             ValidationContext context

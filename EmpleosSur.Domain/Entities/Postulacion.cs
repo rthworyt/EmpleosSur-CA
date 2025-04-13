@@ -22,7 +22,6 @@ namespace EmpleosSur.Domain.Entities
 
         [Required(ErrorMessage = "La fecha de postulación es obligatoria.")]
         [DataType(DataType.Date, ErrorMessage = "La fecha debe tener un formato válido (YYYY-MM-DD).")]
-        [CustomValidation(typeof(Postulacion), nameof(ValidarFechaNoFutura))]
         public DateTime FechaPostulacion { get; set; }
 
         [Required(ErrorMessage = "El estado es obligatorio.")]
@@ -33,12 +32,5 @@ namespace EmpleosSur.Domain.Entities
 
         [ForeignKey("CandidatoId")]
         public Candidato Candidato { get; set; }
-
-        public static ValidationResult ValidarFechaNoFutura(DateTime fecha, ValidationContext context)
-        {
-            return fecha > DateTime.Today
-                ? new ValidationResult("La fecha de postulación no puede ser en el futuro.")
-                : ValidationResult.Success;
-        }
     }
 }
