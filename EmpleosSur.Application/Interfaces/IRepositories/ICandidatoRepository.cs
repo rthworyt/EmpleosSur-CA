@@ -1,5 +1,4 @@
-﻿using EmpleosSur.Application.Interfaces.IServices;
-using EmpleosSur.Domain.Entities;
+﻿using EmpleosSur.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

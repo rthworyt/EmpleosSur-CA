@@ -1,4 +1,4 @@
-using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Application.Interfaces.IRepositories;
 using EmpleosSur.Application.Services;
 using EmpleosSur.Domain.Entities;
 using Moq;

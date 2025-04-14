@@ -37,7 +37,7 @@ public class CandidatosController : ControllerBase
     [HttpGet("email/{email}")]
     public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
     {
-        var candidato = await _candidatoService.GetCandidatoByEmailAsync(email);
+        var candidato = await _candidatoService.GetCandidatoByEmail(email);
 
         if (candidato == null)
         {
@@ -52,7 +52,7 @@ public class CandidatosController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoById(int id)
     {
-        var candidato = await _candidatoService.GetCandidatoByIdAsync(id);
+        var candidato = await _candidatoService.GetAllDataCandidatoById(id);
 
         if (candidato == null)
         {
@@ -73,7 +73,7 @@ public class CandidatosController : ControllerBase
         }
 
         var candidato = _mapper.Map<Candidato>(candidatoDTO);
-        var result = await _candidatoService.CreateCandidatoAsync(candidato);
+        var result = await _candidatoService.CreateCandidato(candidato);
 
         if (!result.Success)
         {
@@ -100,7 +100,12 @@ public class CandidatosController : ControllerBase
         var candidato = _mapper.Map<Candidato>(candidatoDTO);
         candidato.Id = id;
 
-        await _candidatoService.UpdateCandidatoAsync(candidato);
+        var result = await _candidatoService.UpdateCandidato(candidato);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
 
         var updatedCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
         return Ok(updatedCandidatoDTO);
@@ -110,7 +115,13 @@ public class CandidatosController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteCandidato(int id)
     {
-        await _candidatoService.DeleteCandidatoAsync(id);
+        var result = await _candidatoService.DeleteCandidato(id);
+
+        if (!result.Success)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
         return Ok(new { message = "Candidato eliminado correctamente." });
     }
 }

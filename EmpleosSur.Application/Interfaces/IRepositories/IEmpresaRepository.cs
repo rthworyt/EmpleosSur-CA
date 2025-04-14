@@ -1,18 +1,18 @@
-﻿using EmpleosSur.Application.Interfaces.IServices;
-using EmpleosSur.Domain.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EmpleosSur.Domain.Entities;
+using EmpleosSur.Domain.Helpers;
 
 namespace EmpleosSur.Application.Interfaces.IRepositories
 {
     public interface IEmpresaRepository : IRepository<Empresa>
     {
-        Task<IEnumerable<Empresa>> GetByLocalidadAsync(string localidad);
-        Task<Empresa> GetByRNCAsync(string rnc);
-        Task<Empresa> GetByEmailAsync(string email);
-        Task<IEnumerable<Empresa>> GetByNombreAsync(string nombre);
+        Task<Empresa> GetEmpresaByRNC(string rnc);
+        Task<Empresa> GetEmpresaByEmail(string email);
+        Task<IEnumerable<Empresa>> GetEmpresaByNombre(string nombre);
+        Task<IEnumerable<Empresa>> GetEmpresaByLocalidad(string localidad);
     }
 }

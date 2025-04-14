@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EmpleosSur.Domain.Entities;
+﻿using EmpleosSur.Domain.Entities;
 using EmpleosSur.Domain.Helpers;
 
 namespace EmpleosSur.Application.Interfaces.IServices
 {
-    public interface ICandidatoService
+    public interface ICandidatoService : IService<Candidato>
     {
-        Task<Candidato> GetCandidatoById(int id);
         Task<Candidato> GetCandidatoByEmail(string email);
         Task<Candidato> GetAllDataCandidatoById(int id);
+        Task<IEnumerable<Candidato>> GetCandidatoByCiudad(string ciudad);
 
         Task<OperationResult> CreateCandidato(Candidato candidato);
         Task<OperationResult> UpdateCandidato(Candidato candidato);

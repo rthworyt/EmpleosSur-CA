@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using EmpleosSur.WebAPI.Generators;
 using FluentAssertions.Common;
+using EmpleosSur.Application.Interfaces.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

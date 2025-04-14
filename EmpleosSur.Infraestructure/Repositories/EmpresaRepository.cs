@@ -14,25 +14,25 @@ namespace EmpleosSur.Infraestructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Empresa>> GetByLocalidadAsync(string localidad)
+        public async Task<IEnumerable<Empresa>> GetEmpresaByLocalidad(string localidad)
         {
             return await _context.Empresas
                 .Where(e => e.Direccion.Contains(localidad)).ToListAsync();
         }
 
-        public async Task<Empresa> GetByRNCAsync(string rnc)
+        public async Task<Empresa> GetEmpresaByRNC(string rnc)
         {
             return await _context.Empresas
                 .FirstOrDefaultAsync(e => e.RNC == rnc);
         }
 
-        public async Task<Empresa> GetByEmailAsync(string email)
+        public async Task<Empresa> GetEmpresaByEmail(string email)
         {
             return await _context.Empresas
                 .FirstOrDefaultAsync(e => e.EmailCorporativo == email);
         }
 
-        public async Task<IEnumerable<Empresa>> GetByNombreAsync(string nombre)
+        public async Task<IEnumerable<Empresa>> GetEmpresaByNombre(string nombre)
         {
             return await _context.Empresas
                 .Where(e => e.Nombre.Contains(nombre))

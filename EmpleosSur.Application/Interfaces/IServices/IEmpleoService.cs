@@ -4,20 +4,11 @@ using EmpleosSur.Domain.Entities;
 
 namespace EmpleosSur.Application.Interfaces.IServices
 {
-    public interface IEmpleoService
+    public interface IEmpleoService : IService<Empleo>
     {
-        Task CreateEmpleoAsync(Empleo empleo);
-
-        Task<bool> DeleteEmpleoAsync(int id);
-
-        Task<IEnumerable<Empleo>> GetEmpleosByEmpresaIdAsync(int empresaId);
-
-        Task<IEnumerable<Empleo>> SearchEmpleosByTitleAsync(string title);
-
-        Task UpdateEmpleoAsync(Empleo empleo);
-
-        Task<Empleo> GetEmpleoByIdAsync(int id);
-
+        Task<IEnumerable<Empleo>> GetEmpleosByEmpresaId(int empresaId);
+        Task<IEnumerable<Empleo>> SearchEmpleosByTitulo(string titulo);
         Task<List<Empleo>> GetAllEmpleosAsync();
+        Task<IEnumerable<Empleo>> GetRecentEmpleosAsync(int cantidad);
     }
 }

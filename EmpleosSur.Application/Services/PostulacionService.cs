@@ -1,20 +1,24 @@
 ﻿using EmpleosSur.Application.Interfaces;
+using EmpleosSur.Application.Interfaces.IRepositories;
 using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Core.Interfaces;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.Domain.Helpers;
 
 namespace EmpleosSur.Application.Services
 {
-    public class PostulacionService
+    public class PostulacionService : IPostulacionService
     {
+        private readonly IPostulacionRepository _postulacionRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PostulacionService(IUnitOfWork unitOfWork)
+        public PostulacionService(IUnitOfWork unitOfWork, IPostulacionRepository postulacionRepository)
         {
             _unitOfWork = unitOfWork;
+            _postulacionRepository = postulacionRepository;
         }
 
-        public async Task<OperationResult> CreatePostulacionAsync(Postulacion postulacion)
+        public async Task<OperationResult> CreatePostulacion(Postulacion postulacion)
         {
             var empleo = await _unitOfWork.Empleos.GetByIdAsync(postulacion.EmpleoId);
             var candidato = await _unitOfWork.Candidatos.GetByIdAsync(postulacion.CandidatoId);
@@ -24,57 +28,55 @@ namespace EmpleosSur.Application.Services
                 return OperationResult.Failure("Empleo o candidato no válido.");
             }
 
-            await _unitOfWork.Postulaciones.CreateAsync(postulacion);
+            await _postulacionRepository.CreateAsync(postulacion);
             await _unitOfWork.CompletarAsync();
 
             return OperationResult.SuccessResult();
         }
 
-        public async Task<IEnumerable<Postulacion>> GetPostulacionesByCandidatoIdAsync(
-            int candidatoId
-        )
-        {
-            return await _unitOfWork.Postulaciones.GetAllAsync(p => p.CandidatoId == candidatoId);
-        }
-
-        public async Task<IEnumerable<Postulacion>> GetPostulacionesByEmpleoIdAsync(int empleoId)
-        {
-            return await _unitOfWork.Postulaciones.GetAllAsync(p => p.EmpleoId == empleoId);
-        }
-
-        public async Task<bool> UpdateEstadoPostulacionAsync(
+        public async Task<OperationResult> UpdateEstadoPostulacion(
             int idPostulacion,
-            EstadoPostulacion estadoPostulacion
+            string estadoPostulacion
         )
         {
-            var postulacion = await _unitOfWork.Postulaciones.GetByIdAsync(idPostulacion);
+            var postulacion = await _postulacionRepository.GetByIdAsync(idPostulacion);
             if (postulacion == null)
-                return false;
+                return OperationResult.Failure("Postulación no encontrada.");
 
-            postulacion.Estado = estadoPostulacion; 
-            await _unitOfWork.Postulaciones.UpdateAsync(postulacion);
+            if (!Enum.TryParse<EstadoPostulacion>(estadoPostulacion, out var estado))
+                return OperationResult.Failure("Estado de postulación no válido.");
+
+            postulacion.Estado = estado;
+            await _postulacionRepository.UpdateAsync(postulacion);
             await _unitOfWork.CompletarAsync();
-            return true;
+
+            return OperationResult.SuccessResult();
         }
 
-        public async Task<bool> DeletePostulacionAsync(int id)
+        public async Task<OperationResult> DeletePostulacion(int id)
         {
-            var eliminado = await _unitOfWork.Postulaciones.DeleteAsync(id);
+            var postulacion = await _postulacionRepository.GetByIdAsync(id);
+            if (postulacion == null)
+                return OperationResult.Failure("Postulación no encontrada.");
+
+            var eliminado = await _postulacionRepository.DeleteAsync(id);
             if (eliminado)
             {
                 await _unitOfWork.CompletarAsync();
+                return OperationResult.SuccessResult();
             }
-            return eliminado;
+
+            return OperationResult.Failure("No se pudo eliminar la postulación.");
         }
 
-        public async Task<List<Postulacion>> GetPostulacionesAsync()
+        public async Task<IEnumerable<Postulacion>> GetPostulacionesByCandidatoId(int candidatoId)
         {
-            return (await _unitOfWork.Postulaciones.GetAllAsync(p => true)).ToList();
+            return await _postulacionRepository.GetPostulacionByCandidatoAsync(candidatoId);
         }
 
-        public async Task<Postulacion> GetByIdAsync(int id)
+        public async Task<IEnumerable<Postulacion>> GetPostulacionesByEmpleoId(int empleoId)
         {
-            return await _unitOfWork.Postulaciones.GetByIdAsync(id);
+            return await _postulacionRepository.GetPostulacionByEmpleoAsync(empleoId);
         }
     }
 }
