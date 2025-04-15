@@ -1,8 +1,5 @@
-﻿using EmpleosSur.Application.Interfaces.IRepositories;
-using EmpleosSur.Application.Interfaces.IServices;
+﻿using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Domain.Entities;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EmpleosSur.Application.Services
 {

@@ -63,6 +63,21 @@ public class CandidatosController : ControllerBase
         return Ok(candidatoDTO);
     }
 
+    // GET
+    [HttpGet("ciudad/{ciudad}")]
+    public async Task<ActionResult<IEnumerable<CandidatoReadOnlyDTO>>> GetCandidatosByCiudad(string ciudad)
+    {
+        var candidatos = await _candidatoService.GetCandidatoByCiudad(ciudad);
+
+        if (candidatos == null || !candidatos.Any())
+        {
+            return NotFound();
+        }
+
+        var candidatosDTO = _mapper.Map<IEnumerable<CandidatoReadOnlyDTO>>(candidatos);
+        return Ok(candidatosDTO);
+    }
+
     // POST
     [HttpPost]
     public async Task<ActionResult<CandidatoDTO>> CreateCandidato(CandidatoDTO candidatoDTO)

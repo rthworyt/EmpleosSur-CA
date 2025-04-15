@@ -1,86 +1,139 @@
-using EmpleosSur.Application.Services;
-using EmpleosSur.Domain.Entities;
 using Moq;
+using EmpleosSur.Application.Services;
+using EmpleosSur.Core.Interfaces;
+using EmpleosSur.Domain.Entities;
 using EmpleosSur.Application.Interfaces;
 
-namespace EmpleosSur.Tests
+namespace EmpleosSur.Tests.Services
 {
     [TestClass]
     public class PostulacionServiceTests
     {
-        private Mock<IUnitOfWork> _mockUnitOfWork;
-        private PostulacionService _postulacionService;
+        private Mock<IPostulacionRepository> _repositorioPostulacionMock;
+        private Mock<IUnitOfWork> _unitOfWorkMock;
+        private PostulacionService _servicio;
 
         [TestInitialize]
-        public void SetUp()
+        public void Setup()
         {
-            // Inicializar los mocks
-            _mockUnitOfWork = new Mock<IUnitOfWork>();
-
-            // Crear la instancia del servicio
-            _postulacionService = new PostulacionService(_mockUnitOfWork.Object);
+            _repositorioPostulacionMock = new Mock<IPostulacionRepository>();
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
+            _servicio = new PostulacionService(_unitOfWorkMock.Object, _repositorioPostulacionMock.Object);
         }
 
         [TestMethod]
-        public async Task CreaPostulacion_SiDatosSonValidos()
+        public async Task CreatePostulacion_CreaPostulacionConExito()
         {
-            // Arrange
-            var postulacion = new Postulacion
-            {
-                EmpleoId = 1,
-                CandidatoId = 1,
-                Estado = EstadoPostulacion.Pendiente // Usar el enum aquí
-            };
-
+            var postulacion = new Postulacion { EmpleoId = 1, CandidatoId = 1 };
             var empleo = new Empleo { Id = 1 };
             var candidato = new Candidato { Id = 1 };
 
-            _mockUnitOfWork.Setup(uow => uow.Empleos.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(empleo);
-            _mockUnitOfWork.Setup(uow => uow.Candidatos.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(candidato);
-            _mockUnitOfWork.Setup(uow => uow.Postulaciones.CreateAsync(It.IsAny<Postulacion>())).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(u => u.Empleos.GetByIdAsync(postulacion.EmpleoId)).ReturnsAsync(empleo);
+            _unitOfWorkMock.Setup(u => u.Candidatos.GetByIdAsync(postulacion.CandidatoId)).ReturnsAsync(candidato);
+            _repositorioPostulacionMock.Setup(r => r.CreateAsync(postulacion)).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(u => u.CompletarAsync()).ReturnsAsync(1);
 
-            // Act
-            var result = await _postulacionService.CreatePostulacionAsync(postulacion);
+            var resultado = await _servicio.CreatePostulacion(postulacion);
 
-            // Assert
-            _mockUnitOfWork.Verify(uow => uow.Postulaciones.CreateAsync(postulacion), Times.Once);
-            _mockUnitOfWork.Verify(uow => uow.CompletarAsync(), Times.Once);
-            Assert.AreEqual("La operación fue exitosa.", result.Success ? "La operación fue exitosa." : result.ErrorMessage);
+            Assert.IsTrue(resultado.Success);
         }
 
         [TestMethod]
-        public async Task ActualizaPostulacion_SiExiste()
+        public async Task CreatePostulacion_DaErrorSiEmpleoOCandidatoNoGood()
         {
-            // Arrange
-            var postulacion = new Postulacion { Id = 1, Estado = EstadoPostulacion.Pendiente }; // Usar el enum aquí
-            var nuevoEstado = EstadoPostulacion.Aceptado; // Usar el enum aquí
-            _mockUnitOfWork.Setup(uow => uow.Postulaciones.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(postulacion);
-            _mockUnitOfWork.Setup(uow => uow.Postulaciones.UpdateAsync(It.IsAny<Postulacion>())).Returns(Task.CompletedTask);
+            var postulacion = new Postulacion { EmpleoId = 1, CandidatoId = 1 };
 
-            // Act
-            var result = await _postulacionService.UpdateEstadoPostulacionAsync(postulacion.Id, nuevoEstado);
+            _unitOfWorkMock.Setup(u => u.Empleos.GetByIdAsync(postulacion.EmpleoId)).ReturnsAsync((Empleo)null);
+            _unitOfWorkMock.Setup(u => u.Candidatos.GetByIdAsync(postulacion.CandidatoId)).ReturnsAsync((Candidato)null);
 
-            // Assert
-            Assert.IsTrue(result);
-            Assert.AreEqual(nuevoEstado, postulacion.Estado); // Comparar con el enum
-            _mockUnitOfWork.Verify(uow => uow.Postulaciones.UpdateAsync(postulacion), Times.Once);
-            _mockUnitOfWork.Verify(uow => uow.CompletarAsync(), Times.Once);
+            var resultado = await _servicio.CreatePostulacion(postulacion);
+
+            Assert.IsFalse(resultado.Success);
+            Assert.AreEqual("Empleo o candidato no válido.", resultado.ErrorMessage);
         }
 
         [TestMethod]
-        public async Task EliminaPostulacion_CuandoPostulacionExiste()
+        public async Task UpdateEstadoPostulacion_ActualizaEstadoCorrectamente()
         {
-            // Arrange
-            var postulacionId = 1;
-            _mockUnitOfWork.Setup(uow => uow.Postulaciones.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
+            var postulacion = new Postulacion { Id = 1, Estado = EstadoPostulacion.Pendiente };
+            var estadoPostulacion = "Aceptado";
 
-            // Act
-            var result = await _postulacionService.DeletePostulacionAsync(postulacionId);
+            _repositorioPostulacionMock.Setup(r => r.GetByIdAsync(postulacion.Id)).ReturnsAsync(postulacion);
+            _repositorioPostulacionMock.Setup(r => r.UpdateAsync(postulacion)).Returns(Task.CompletedTask);
+            _unitOfWorkMock.Setup(u => u.CompletarAsync()).ReturnsAsync(1);
 
-            // Assert
-            Assert.IsTrue(result);
-            _mockUnitOfWork.Verify(uow => uow.Postulaciones.DeleteAsync(postulacionId), Times.Once);
-            _mockUnitOfWork.Verify(uow => uow.CompletarAsync(), Times.Once);
+            var resultado = await _servicio.UpdateEstadoPostulacion(postulacion.Id, estadoPostulacion);
+
+            Assert.IsTrue(resultado.Success);
+            Assert.AreEqual(EstadoPostulacion.Aceptado, postulacion.Estado);
+        }
+
+        [TestMethod]
+        public async Task UpdateEstadoPostulacion_DRetornaErrorSiPostulacionNoExiste()
+        {
+            var idPostulacion = 999;
+            var estadoPostulacion = "Aprobado";
+
+            _repositorioPostulacionMock.Setup(r => r.GetByIdAsync(idPostulacion)).ReturnsAsync((Postulacion)null);
+
+            var resultado = await _servicio.UpdateEstadoPostulacion(idPostulacion, estadoPostulacion);
+
+            Assert.IsFalse(resultado.Success);
+            Assert.AreEqual("Postulación no encontrada.", resultado.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task DeletePostulacion_EliminaPostulacionCorrectamente()
+        {
+            var idPostulacion = 1;
+            var postulacion = new Postulacion { Id = idPostulacion };
+
+            _repositorioPostulacionMock.Setup(r => r.GetByIdAsync(idPostulacion)).ReturnsAsync(postulacion);
+            _repositorioPostulacionMock.Setup(r => r.DeleteAsync(idPostulacion)).ReturnsAsync(true);
+            _unitOfWorkMock.Setup(u => u.CompletarAsync()).ReturnsAsync(1);
+
+            var resultado = await _servicio.DeletePostulacion(idPostulacion);
+
+            Assert.IsTrue(resultado.Success);
+        }
+
+        [TestMethod]
+        public async Task DeletePostulacion_RetornaErrorSiPostulacionNoExiste()
+        {
+            var idPostulacion = 999;
+
+            _repositorioPostulacionMock.Setup(r => r.GetByIdAsync(idPostulacion)).ReturnsAsync((Postulacion)null);
+
+            var resultado = await _servicio.DeletePostulacion(idPostulacion);
+
+            Assert.IsFalse(resultado.Success);
+            Assert.AreEqual("Postulación no encontrada.", resultado.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task GetPostulacionesByCandidatoId_RetornaPostulacionesByCandidato()
+        {
+            var candidatoId = 1;
+            var postulaciones = new List<Postulacion> { new Postulacion { CandidatoId = candidatoId } };
+
+            _repositorioPostulacionMock.Setup(r => r.GetPostulacionByCandidatoAsync(candidatoId)).ReturnsAsync(postulaciones);
+
+            var resultado = await _servicio.GetPostulacionesByCandidatoId(candidatoId);
+
+            CollectionAssert.AreEqual(postulaciones, (List<Postulacion>)resultado);
+        }
+
+        [TestMethod]
+        public async Task GetPostulacionesByEmpleoId_RetornaPostulacionesByEmpleo()
+        {
+            var empleoId = 1;
+            var postulaciones = new List<Postulacion> { new Postulacion { EmpleoId = empleoId } };
+
+            _repositorioPostulacionMock.Setup(r => r.GetPostulacionByEmpleoAsync(empleoId)).ReturnsAsync(postulaciones);
+
+            var resultado = await _servicio.GetPostulacionesByEmpleoId(empleoId);
+
+            CollectionAssert.AreEqual(postulaciones, (List<Postulacion>)resultado);
         }
     }
 }

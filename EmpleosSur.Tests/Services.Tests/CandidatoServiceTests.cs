@@ -1,115 +1,116 @@
-using EmpleosSur.Application.Interfaces.IRepositories;
-using EmpleosSur.Application.Services;
-using EmpleosSur.Domain.Entities;
 using Moq;
+using EmpleosSur.Application.Interfaces.IRepositories;
+using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Domain.Entities;
 
 namespace EmpleosSur.Tests.Services
 {
     [TestClass]
     public class CandidatoServiceTests
     {
-        private Mock<IRepository<Candidato>> _mockRepository;
-        private CandidatoService _candidatoService;
+        private Mock<ICandidatoRepository> _mockRepo;
+        private ICandidatoService _service;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockRepository = new Mock<IRepository<Candidato>>();
-            _candidatoService = new CandidatoService(_mockRepository.Object);
+            _mockRepo = new Mock<ICandidatoRepository>();
+            _service = new CandidatoService(_mockRepo.Object);
         }
 
         [TestMethod]
-        public async Task SiExiste_RetornaCandidato()
+        public async Task GetAllDataCandidatoById_RetornarCandidatoPorId()
         {
-            // Arrange
-            var email = "sabrinaperez@email.com";
-            var candidato = new Candidato { Id = 1, Email = email };
-            _mockRepository
-                .Setup(r =>
-                    r.GetAllAsync(
-                        It.IsAny<System.Linq.Expressions.Expression<System.Func<Candidato, bool>>>()
-                    )
-                )
-                .ReturnsAsync(new List<Candidato> { candidato });
-
-            // Act
-            var result = await _candidatoService.GetCandidatoByEmailAsync(email);
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(email, result.Email);
-        }
-
-        [TestMethod]
-        public async Task CreacionDeCandidato()
-        {
-            // Arrange
-            var candidato = new Candidato { Id = 2, Email = "joelperez@yahoo.com" };
-
-            _mockRepository.Setup(r => r.CreateAsync(candidato)).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _candidatoService.CreateCandidatoAsync(candidato);
-
-            // Assert
-            Assert.IsTrue(result.Success);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(System.Exception), "El candidato no existe.")]
-        public async Task EliminaCandidato_ErrorSiNoEncuentra()
-        {
-            // Arrange
-            int id = 99;
-            _mockRepository.Setup(r => r.GetByIdAsync(id)).ReturnsAsync((Candidato)null);
-
-            // Act
-            await _candidatoService.DeleteCandidatoAsync(id);
-        }
-
-        [TestMethod]
-        public async Task EliminaCandidato_SiExiste()
-        {
-            // Arrange
             var candidato = new Candidato { Id = 1 };
-            _mockRepository.Setup(r => r.GetByIdAsync(candidato.Id)).ReturnsAsync(candidato);
-            _mockRepository.Setup(r => r.DeleteAsync(candidato.Id)).ReturnsAsync(true);
+            _mockRepo.Setup(r => r.GetAllDataCandidatoById(1)).ReturnsAsync(candidato);
 
-            // Act
-            await _candidatoService.DeleteCandidatoAsync(candidato.Id);
+            var result = await _service.GetAllDataCandidatoById(1);
 
-            // Assert
-            _mockRepository.Verify(r => r.DeleteAsync(candidato.Id), Times.Once);
+            Assert.AreEqual(candidato, result);
         }
 
         [TestMethod]
-        public async Task ModificaCandidato()
+        public async Task GetCandidatoByEmail_RetornaCandidatoPorEmail()
         {
-            // Arrange
-            var candidato = new Candidato { Id = 3 };
-            _mockRepository.Setup(r => r.UpdateAsync(candidato)).Returns(Task.CompletedTask);
+            var email = "turealpicapollo@hotmail.com";
+            var candidato = new Candidato { Email = email };
+            _mockRepo.Setup(r => r.GetCandidatoByEmail(email)).ReturnsAsync(candidato);
 
-            // Act
-            await _candidatoService.UpdateCandidatoAsync(candidato);
+            var result = await _service.GetCandidatoByEmail(email);
 
-            // Assert
-            _mockRepository.Verify(r => r.UpdateAsync(candidato), Times.Once);
+            Assert.AreEqual(candidato, result);
         }
 
         [TestMethod]
-        public async Task EncuentraCandidatoById()
+        public async Task GetCandidatoByCiudad_RetornaListaCandidatos()
         {
-            // Arrange
-            int id = 5;
-            var candidato = new Candidato { Id = id };
-            _mockRepository.Setup(r => r.GetByIdAsync(id)).ReturnsAsync(candidato);
+            var ciudad = "Barahona";
+            var candidatos = new List<Candidato> { new Candidato { Ciudad = ciudad } };
+            _mockRepo.Setup(r => r.GetCandidatoByCiudad(ciudad)).ReturnsAsync(candidatos);
 
-            // Act
-            var result = await _candidatoService.GetCandidatoByIdAsync(id);
+            var result = await _service.GetCandidatoByCiudad(ciudad);
 
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(id, result.Id);
+            CollectionAssert.AreEqual(candidatos, (List<Candidato>)result);
+        }
+
+        [TestMethod]
+        public async Task CreateCandidato_RetornaConExito()
+        {
+            var candidato = new Candidato();
+            _mockRepo.Setup(r => r.CreateAsync(candidato)).Returns(Task.CompletedTask);
+
+            var result = await _service.CreateCandidato(candidato);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsNull(result.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task CreateCandidato_RetornaFallo()
+        {
+            var candidato = new Candidato();
+            _mockRepo.Setup(r => r.CreateAsync(candidato)).ThrowsAsync(new System.Exception("Error"));
+
+            var result = await _service.CreateCandidato(candidato);
+
+            Assert.IsFalse(result.Success);
+            Assert.IsTrue(result.ErrorMessage.Contains("Error"));
+        }
+
+        [TestMethod]
+        public async Task DeleteCandidato_RetornarFallo_CuandoNoEncontrado()
+        {
+            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync((Candidato)null);
+
+            var result = await _service.DeleteCandidato(1);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("El candidato no existe.", result.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task DeleteCandidato_RetornaExito_SiExiste()
+        {
+            var candidato = new Candidato { Id = 1 };
+            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(candidato);
+            _mockRepo.Setup(r => r.DeleteAsync(1)).ReturnsAsync(true);
+
+            var result = await _service.DeleteCandidato(1);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsNull(result.ErrorMessage);
+        }
+
+        [TestMethod]
+        public async Task UpdateCandidato_RetornaExito()
+        {
+            var candidato = new Candidato { Id = 1 };
+            _mockRepo.Setup(r => r.UpdateAsync(candidato)).Returns(Task.CompletedTask);
+
+            var result = await _service.UpdateCandidato(candidato);
+
+            Assert.IsTrue(result.Success);
+            Assert.IsNull(result.ErrorMessage);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using EmpleosSur.Domain.Entities;
 using EmpleosSur.Infraestructure.Data;
 using EmpleosSur.Infraestructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 public class InformacionAcademicaRepository : Repository<InformacionAcademica>, IInformacionAcademicaRepository
 {
