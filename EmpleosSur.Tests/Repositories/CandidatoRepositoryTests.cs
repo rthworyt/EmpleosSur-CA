@@ -124,7 +124,8 @@ namespace EmpleosSur.Tests.Repositories
                 CedulaRepresentante = "00234567890",
                 EmailCorporativo = "info@innovatech.com",
                 NombreRepresentante = "Ana Lopez",
-                RNC = "987654321"
+                RNC = "987654321",
+                Ciudad = "Santiago"
             };
 
             var empleo = new Empleo
@@ -157,28 +158,28 @@ namespace EmpleosSur.Tests.Repositories
                 FechaNacimiento = new DateTime(1992, 3, 15),
                 Genero = "Femenino",
                 InformacionesAcademicas = new List<InformacionAcademica>
-            {
-                new InformacionAcademica
                 {
-                TituloObtenido = "Licenciada en Dise�o Web",
-                Institucion = "Universidad Creativa",
-                Nivel = NivelAcademico.Universitario,
-                FechaInicio = new DateTime(2010, 8, 1),
-                FechaFin = new DateTime(2014, 5, 1),
-                EnCurso = false
-                }
-            },
+                    new InformacionAcademica
+                    {
+                        TituloObtenido = "Licenciada en Dise�o Web",
+                        Institucion = "Universidad Creativa",
+                        Nivel = NivelAcademico.Universitario,
+                        FechaInicio = new DateTime(2010, 8, 1),
+                        FechaFin = new DateTime(2014, 5, 1),
+                        EnCurso = false
+                    }
+                },
                 ExperienciasLaborales = new List<ExperienciaLaboral>
-            {
-                new ExperienciaLaboral
                 {
-                Empresa = "Freelance",
-                Cargo = "Desarrolladora Web",
-                FechaInicio = new DateTime(2015, 1, 1),
-                FechaFin = new DateTime(2020, 1, 1),
-                Descripcion = "Dise�o y desarrollo de sitios web personalizados"
-                }
-            },
+                    new ExperienciaLaboral
+                    {
+                        Empresa = "Freelance",
+                        Cargo = "Desarrolladora Web",
+                        FechaInicio = new DateTime(2015, 1, 1),
+                        FechaFin = new DateTime(2020, 1, 1),
+                        Descripcion = "Dise�o y desarrollo de sitios web personalizados"
+                    }
+                },
                 Postulaciones = new List<Postulacion> { postulacion }
             };
 
@@ -196,7 +197,7 @@ namespace EmpleosSur.Tests.Repositories
         }
 
         [TestMethod]
-        public async Task GetCandidatoByCiudad_RetornaCandidatosFiltrados()
+        public async Task GetCandidatosByCiudad_RetornaCandidatosFiltrados()
         {
             var candidato1 = new Candidato
             {
@@ -240,7 +241,7 @@ namespace EmpleosSur.Tests.Repositories
                 Apellido = "Martinez",
                 Email = "laura.martinez@example.com",
                 Telefono = "8097654321",
-                Ciudad = "Santiago",
+                Ciudad = "Santo Domingo",
                 Direccion = "Avenida Central 456",
                 Descripcion = "Analista de sistemas con 3 a�os de experiencia.",
                 FechaNacimiento = new DateTime(1990, 7, 15),
