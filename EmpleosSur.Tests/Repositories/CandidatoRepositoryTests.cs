@@ -40,7 +40,7 @@ namespace EmpleosSur.Tests.Repositories
                 Telefono = "8091234567",
                 CedulaRepresentante = "00123456789",
                 EmailCorporativo = "contacto@techrd.com",
-                NombreRepresentante = "Carlos M�ndez",
+                NombreRepresentante = "Carlos Mendez",
                 RNC = "123456789"
             };
 
@@ -65,7 +65,7 @@ namespace EmpleosSur.Tests.Repositories
             var candidato = new Candidato
             {
                 Nombre = "Juan",
-                Apellido = "P�rez",
+                Apellido = "Perez",
                 Email = "juanpi27@icloud.com",
                 Telefono = "1234567890",
                 Ciudad = "Santo Domingo",
