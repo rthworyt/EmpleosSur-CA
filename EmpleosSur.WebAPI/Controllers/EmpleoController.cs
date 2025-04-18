@@ -2,6 +2,7 @@
 using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.WebAPI.DTOs;
+using EmpleosSur.WebAPI.Generators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmpleosSur.WebAPI.Controllers
@@ -12,11 +13,27 @@ namespace EmpleosSur.WebAPI.Controllers
     {
         private readonly IEmpleoService _empleoService;
         private readonly IMapper _mapper;
+        private readonly FakeDataGenerator _fakeDataGenerator;
 
-        public EmpleoController(IEmpleoService empleoService, IMapper mapper)
+        public EmpleoController(
+            IEmpleoService empleoService,
+            IMapper mapper,
+            FakeDataGenerator fakeDataGenerator
+        )
         {
             _empleoService = empleoService;
             _mapper = mapper;
+            _fakeDataGenerator = fakeDataGenerator;
+        }
+
+        // GET - Generar empleos aleatorios
+        [HttpGet("GeneraFakeEmpleos")]
+        public async Task<IActionResult> GenerateFakeEmpleos(int count = 10)
+        {
+            await _fakeDataGenerator.GenerateFakeEmpleos(count);
+            return Ok(
+                new { message = $"{count} empleos generados correctamente en la base de datos." }
+            );
         }
 
         // POST

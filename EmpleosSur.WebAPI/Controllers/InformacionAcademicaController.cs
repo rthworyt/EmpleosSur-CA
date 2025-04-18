@@ -2,6 +2,7 @@
 using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.WebAPI.DTOs;
+using EmpleosSur.WebAPI.Generators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmpleosSur.WebAPI.Controllers
@@ -12,14 +13,30 @@ namespace EmpleosSur.WebAPI.Controllers
     {
         private readonly IInformacionAcademicaService _informacionAcademicaService;
         private readonly IMapper _mapper;
+        private readonly FakeDataGenerator _fakeDataGenerator;
 
         public InformacionAcademicaController(
             IInformacionAcademicaService informacionAcademicaService,
-            IMapper mapper
+            IMapper mapper,
+            FakeDataGenerator fakeDataGenerator
         )
         {
             _informacionAcademicaService = informacionAcademicaService;
             _mapper = mapper;
+            _fakeDataGenerator = fakeDataGenerator;
+        }
+
+        // GET - Generar informaciones académicas aleatorias
+        [HttpGet("GeneraFakeInformacionesAcademicas")]
+        public async Task<IActionResult> GenerateFakeInformacionesAcademicas(int count = 10)
+        {
+            await _fakeDataGenerator.GenerateFakeInformacionesAcademicas(count);
+            return Ok(
+                new
+                {
+                    message = $"{count} informaciones académicas generadas correctamente en la base de datos."
+                }
+            );
         }
 
         // GET by Id
@@ -94,7 +111,7 @@ namespace EmpleosSur.WebAPI.Controllers
             informacionAcademica.Id = id;
 
             await _informacionAcademicaService.UpdateAsync(informacionAcademica);
-            return NoContent(); 
+            return NoContent();
         }
 
         // DELETE

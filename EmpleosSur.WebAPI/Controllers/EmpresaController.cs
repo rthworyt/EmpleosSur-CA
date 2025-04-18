@@ -2,6 +2,7 @@ using AutoMapper;
 using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.WebAPI.DTOs;
+using EmpleosSur.WebAPI.Generators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmpleosSur.WebAPI.Controllers
@@ -12,14 +13,30 @@ namespace EmpleosSur.WebAPI.Controllers
     {
         private readonly IEmpresaService _empresaService;
         private readonly IMapper _mapper;
+        private readonly FakeDataGenerator _fakeDataGenerator;
 
-        public EmpresaController(IEmpresaService empresaService, IMapper mapper)
+        public EmpresaController(
+            IEmpresaService empresaService,
+            IMapper mapper,
+            FakeDataGenerator fakeDataGenerator
+        )
         {
             _empresaService = empresaService;
             _mapper = mapper;
+            _fakeDataGenerator = fakeDataGenerator;
         }
 
-        // POST  
+        // GET - Generar empresas aleatorias
+        [HttpGet("GeneraFakeEmpresas")]
+        public async Task<IActionResult> GenerateFakeEmpresas(int count = 10)
+        {
+            await _fakeDataGenerator.GenerateFakeEmpresas(count);
+            return Ok(
+                new { message = $"{count} empresas generadas correctamente en la base de datos." }
+            );
+        }
+
+        // POST
         [HttpPost("CreateEmpresa")]
         public async Task<ActionResult<EmpresaReadOnlyDTO>> CreateEmpresa(EmpresaDTO empresaDTO)
         {
@@ -45,7 +62,7 @@ namespace EmpleosSur.WebAPI.Controllers
             );
         }
 
-        // GET 
+        // GET
         [HttpGet("GetEmpresaById")]
         public async Task<ActionResult<EmpresaReadOnlyDTO>> GetEmpresaById(int id)
         {
@@ -59,7 +76,7 @@ namespace EmpleosSur.WebAPI.Controllers
             return Ok(new { message = "Empresa encontrada correctamente.", data = empresaDTO });
         }
 
-        //// GET 
+        //// GET
         //[HttpGet("GetAllEmpresas")]
         //public async Task<ActionResult<IEnumerable<EmpresaReadOnlyDTO>>> GetAllEmpresas()
         //{
@@ -70,7 +87,7 @@ namespace EmpleosSur.WebAPI.Controllers
         //    );
         //}
 
-        // PUT 
+        // PUT
         [HttpPut("UpdateEmpresa")]
         public async Task<ActionResult<EmpresaReadOnlyDTO>> UpdateEmpresa(
             int id,
@@ -94,7 +111,7 @@ namespace EmpleosSur.WebAPI.Controllers
                 return NotFound(new { message = "Empresa no encontrada." });
             }
 
-            _mapper.Map(empresaDTO, empresa); // Mapear los cambios a la entidad existente  
+            _mapper.Map(empresaDTO, empresa); // Mapear los cambios a la entidad existente
             await _empresaService.UpdateAsync(empresa);
 
             var updatedEmpresaDTO = _mapper.Map<EmpresaReadOnlyDTO>(empresa);
@@ -103,7 +120,7 @@ namespace EmpleosSur.WebAPI.Controllers
             );
         }
 
-        // DELETE  
+        // DELETE
         [HttpDelete("DeleteEmpresaById")]
         public async Task<ActionResult> DeleteEmpresa(int id)
         {
@@ -139,7 +156,9 @@ namespace EmpleosSur.WebAPI.Controllers
 
         // GET
         [HttpGet("GetEmpresasByLocalidad")]
-        public async Task<ActionResult<IEnumerable<EmpresaReadOnlyDTO>>> GetEmpresasByLocalidad(string localidad)
+        public async Task<ActionResult<IEnumerable<EmpresaReadOnlyDTO>>> GetEmpresasByLocalidad(
+            string localidad
+        )
         {
             var empresas = await _empresaService.GetEmpresaByLocalidad(localidad);
             if (empresas == null || !empresas.Any())
@@ -153,7 +172,9 @@ namespace EmpleosSur.WebAPI.Controllers
 
         // GET
         [HttpGet("GetEmpresasByNombre")]
-        public async Task<ActionResult<IEnumerable<EmpresaReadOnlyDTO>>> GetEmpresasByNombre(string nombre)
+        public async Task<ActionResult<IEnumerable<EmpresaReadOnlyDTO>>> GetEmpresasByNombre(
+            string nombre
+        )
         {
             var empresas = await _empresaService.GetEmpresaByNombre(nombre);
             if (empresas == null || !empresas.Any())
@@ -164,6 +185,5 @@ namespace EmpleosSur.WebAPI.Controllers
             var empresasDTO = _mapper.Map<IEnumerable<EmpresaReadOnlyDTO>>(empresas);
             return Ok(new { message = "Empresas encontradas correctamente.", data = empresasDTO });
         }
-
     }
 }

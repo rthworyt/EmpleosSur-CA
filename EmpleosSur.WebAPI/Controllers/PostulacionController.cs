@@ -2,6 +2,7 @@
 using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.WebAPI.DTOs;
+using EmpleosSur.WebAPI.Generators;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmpleosSur.WebAPI.Controllers
@@ -12,11 +13,30 @@ namespace EmpleosSur.WebAPI.Controllers
     {
         private readonly IPostulacionService _postulacionService;
         private readonly IMapper _mapper;
+        private readonly FakeDataGenerator _fakeDataGenerator;
 
-        public PostulacionController(IPostulacionService postulacionService, IMapper mapper)
+        public PostulacionController(
+            IPostulacionService postulacionService,
+            IMapper mapper,
+            FakeDataGenerator fakeDataGenerator
+        )
         {
             _postulacionService = postulacionService;
             _mapper = mapper;
+            _fakeDataGenerator = fakeDataGenerator;
+        }
+
+        // GET - Generar postulaciones aleatorias
+        [HttpGet("GeneraFakePostulaciones")]
+        public async Task<IActionResult> GenerateFakePostulaciones(int count = 10)
+        {
+            await _fakeDataGenerator.GenerateFakePostulaciones(count);
+            return Ok(
+                new
+                {
+                    message = $"{count} postulaciones generadas correctamente en la base de datos."
+                }
+            );
         }
 
         // GET by CandidatoId
