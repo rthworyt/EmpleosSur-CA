@@ -17,7 +17,7 @@ namespace EmpleosSur.Infraestructure.Repositories
         public async Task<IEnumerable<Empresa>> GetEmpresaByLocalidad(string localidad)
         {
             return await _context.Empresas
-                .Where(e => e.Direccion.Contains(localidad)).ToListAsync();
+                .Where(e => e.Ciudad.Contains(localidad)).ToListAsync();
         }
 
         public async Task<Empresa> GetEmpresaByRNC(string rnc)
@@ -25,13 +25,6 @@ namespace EmpleosSur.Infraestructure.Repositories
             return await _context.Empresas
                 .FirstOrDefaultAsync(e => e.RNC == rnc);
         }
-
-        public async Task<Empresa> GetEmpresaByEmail(string email)
-        {
-            return await _context.Empresas
-                .FirstOrDefaultAsync(e => e.EmailCorporativo == email);
-        }
-
         public async Task<IEnumerable<Empresa>> GetEmpresaByNombre(string nombre)
         {
             return await _context.Empresas

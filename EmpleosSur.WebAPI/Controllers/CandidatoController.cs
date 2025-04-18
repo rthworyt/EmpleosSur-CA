@@ -24,67 +24,77 @@ public class CandidatosController : ControllerBase
         _fakeDataGenerator = fakeDataGenerator;
     }
 
-    [HttpGet("GeneraDatosAleatorios")]
-    public async Task<IActionResult> GenerateFakeCandidatos(int count = 10)
-    {
-        await _fakeDataGenerator.GenerateFakeCandidatos(count);
-        return Ok(
-            new { message = $"{count} candidatos generados correctamente en la base de datos." }
-        );
-    }
-
-    // GET
-    [HttpGet("email/{email}")]
-    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
-    {
-        var candidato = await _candidatoService.GetCandidatoByEmail(email);
-
-        if (candidato == null)
-        {
-            return NotFound();
-        }
-
-        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
-        return Ok(candidatoDTO);
-    }
-
-    // GET
-    [HttpGet("{id}")]
+    // GET por Id
+    [HttpGet("GetCandidatoById")]
     public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoById(int id)
     {
+        if (id <= 0)
+        {
+            return BadRequest(new { message = "ID inválido." });
+        }
+
         var candidato = await _candidatoService.GetAllDataCandidatoById(id);
 
         if (candidato == null)
         {
-            return NotFound();
+            return NotFound(new { message = "Candidato no encontrado." });
         }
 
         var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
         return Ok(candidatoDTO);
     }
 
-    // GET
-    [HttpGet("ciudad/{ciudad}")]
-    public async Task<ActionResult<IEnumerable<CandidatoReadOnlyDTO>>> GetCandidatosByCiudad(string ciudad)
+    // GET por email
+    [HttpGet("GetCandidatoByEmail")]
+    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
     {
+        if (string.IsNullOrEmpty(email))
+        {
+            return BadRequest(new { message = "El correo no puede estar vacío." });
+        }
+
+        var candidato = await _candidatoService.GetCandidatoByEmail(email);
+
+        if (candidato == null)
+        {
+            return NotFound(new { message = "Candidato no encontrado con ese email." });
+        }
+
+        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
+        return Ok(candidatoDTO);
+    }
+
+    // GET por ciudad
+    [HttpGet("GetCandidatosByCiudad")]
+    public async Task<ActionResult<IEnumerable<CandidatoReadOnlyDTO>>> GetCandidatosByCiudad(
+        string ciudad
+    )
+    {
+        if (string.IsNullOrEmpty(ciudad))
+        {
+            return BadRequest(new { message = "La ciudad no puede estar vacía." });
+        }
+
         var candidatos = await _candidatoService.GetCandidatoByCiudad(ciudad);
 
         if (candidatos == null || !candidatos.Any())
         {
-            return NotFound();
+            return NotFound(new { message = "No se encontraron candidatos en esa ciudad." });
         }
 
         var candidatosDTO = _mapper.Map<IEnumerable<CandidatoReadOnlyDTO>>(candidatos);
         return Ok(candidatosDTO);
     }
 
-    // POST
-    [HttpPost]
+    // POST - Crear candidato
+    [HttpPost("CreateCandidato")]
     public async Task<ActionResult<CandidatoDTO>> CreateCandidato(CandidatoDTO candidatoDTO)
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest(
+                new { message = "Los datos proporcionados no son válidos.", errors = ModelState }
+            );
         }
 
         var candidato = _mapper.Map<Candidato>(candidatoDTO);
@@ -92,24 +102,26 @@ public class CandidatosController : ControllerBase
 
         if (!result.Success)
         {
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(
+                new { message = "No se pudo crear el candidato.", error = result.ErrorMessage }
+            );
         }
 
         var newCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
         return CreatedAtAction(
             nameof(GetCandidatoById),
             new { id = candidato.Id },
-            newCandidatoDTO
+            new { message = "Candidato creado correctamente.", data = newCandidatoDTO }
         );
     }
 
-    // PUT
-    [HttpPut("{id}")]
+    // PUT - Actualizar candidato
+    [HttpPut("UpdateCandidato")]
     public async Task<ActionResult> UpdateCandidato(int id, CandidatoDTO candidatoDTO)
     {
-        if (id == 0 || candidatoDTO == null)
+        if (id <= 0 || candidatoDTO == null)
         {
-            return BadRequest("Id o datos inválidos.");
+            return BadRequest(new { message = "ID o datos inválidos." });
         }
 
         var candidato = _mapper.Map<Candidato>(candidatoDTO);
@@ -119,24 +131,41 @@ public class CandidatosController : ControllerBase
 
         if (!result.Success)
         {
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new { message = result.ErrorMessage });
         }
 
         var updatedCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
-        return Ok(updatedCandidatoDTO);
+        return Ok(
+            new { message = "Candidato actualizado correctamente.", data = updatedCandidatoDTO }
+        );
     }
 
-    // DELETE
-    [HttpDelete("{id}")]
+    // DELETE - Eliminar candidato
+    [HttpDelete("DeleteCandidato")]
     public async Task<ActionResult> DeleteCandidato(int id)
     {
+        if (id <= 0)
+        {
+            return BadRequest(new { message = "ID inválido." });
+        }
+
         var result = await _candidatoService.DeleteCandidato(id);
 
         if (!result.Success)
         {
-            return BadRequest(result.ErrorMessage);
+            return BadRequest(new { message = result.ErrorMessage });
         }
 
         return Ok(new { message = "Candidato eliminado correctamente." });
     }
+
+    //// GET - Generar datos aleatorios (comentado)
+    //[HttpGet("GeneraDatosAleatorios")]
+    //public async Task<IActionResult> GenerateFakeCandidatos(int count = 10)
+    //{
+    //    await _fakeDataGenerator.GenerateFakeCandidatos(count);
+    //    return Ok(
+    //        new { message = $"{count} candidatos generados correctamente en la base de datos." }
+    //    );
+    //}
 }

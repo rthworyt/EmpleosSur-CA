@@ -14,11 +14,6 @@ namespace EmpleosSur.Application.Services
             _empresaRepository = empresaRepository;
         }
 
-        public async Task<Empresa> GetEmpresaByEmail(string email)
-        {
-            return await _empresaRepository.GetEmpresaByEmail(email);
-        }
-
         public async Task<Empresa> GetEmpresaByRNC(string rnc)
         {
             return await _empresaRepository.GetEmpresaByRNC(rnc);

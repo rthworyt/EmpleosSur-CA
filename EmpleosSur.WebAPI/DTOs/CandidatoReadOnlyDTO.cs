@@ -13,7 +13,7 @@ namespace EmpleosSur.WebAPI.DTOs
         public string Genero { get; set; }
         public string Ciudad { get; set; }
         public string Direccion { get; set; }
-        public string QuienSoy { get; set; }
+        public string Descripcion { get; set; }
         public List<ExperienciaLaboralDTO> ExperienciasLaborales { get; set; }
         public List<InformacionAcademicaDTO> InformacionesAcademicas { get; set; }
     }

@@ -20,18 +20,6 @@ namespace EmpleosSur.Tests.Services
         }
 
         [TestMethod]
-        public async Task GetEmpresaByEmail_RetornaEmpresaByEmail()
-        {
-            var email = "shaddaybarahona@gmail.com";
-            var empresa = new Empresa { EmailCorporativo = email };
-            _mockRepo.Setup(r => r.GetEmpresaByEmail(email)).ReturnsAsync(empresa);
-
-            var result = await _service.GetEmpresaByEmail(email);
-
-            Assert.AreEqual(empresa, result);
-        }
-
-        [TestMethod]
         public async Task GetEmpresaByRNC_RetornaEmpresaByRNC()
         {
             var rnc = "117013123";

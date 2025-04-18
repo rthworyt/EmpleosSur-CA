@@ -11,7 +11,6 @@ namespace EmpleosSur.Application.Interfaces.IRepositories
     public interface IEmpresaRepository : IRepository<Empresa>
     {
         Task<Empresa> GetEmpresaByRNC(string rnc);
-        Task<Empresa> GetEmpresaByEmail(string email);
         Task<IEnumerable<Empresa>> GetEmpresaByNombre(string nombre);
         Task<IEnumerable<Empresa>> GetEmpresaByLocalidad(string localidad);
     }

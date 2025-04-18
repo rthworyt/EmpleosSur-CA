@@ -1,13 +1,12 @@
 using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Application.Interfaces;
-using EmpleosSur.Application.Services;
 using EmpleosSur.Infraestructure.Data;
 using EmpleosSur.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using EmpleosSur.WebAPI.Generators;
-using FluentAssertions.Common;
 using EmpleosSur.Application.Interfaces.IRepositories;
+using EmpleosSur.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,9 +35,11 @@ builder.Services.AddScoped<FakeDataGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+builder.Services.AddScoped<ICandidatoRepository, CandidatoRepository>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 
 var app = builder.Build();
 
