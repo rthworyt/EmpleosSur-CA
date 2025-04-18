@@ -37,6 +37,7 @@ namespace EmpleosSur.Tests.Repositories
             {
                 Nombre = "TechRD",
                 Direccion = "Av. Siempre Viva",
+                Ciudad = "Santo Domingo",
                 Telefono = "8091234567",
                 CedulaRepresentante = "00123456789",
                 EmailCorporativo = "contacto@techrd.com",
