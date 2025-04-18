@@ -3,7 +3,9 @@ using EmpleosSur.Infraestructure.Data;
 using EmpleosSur.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-public class InformacionAcademicaRepository : Repository<InformacionAcademica>, IInformacionAcademicaRepository
+public class InformacionAcademicaRepository
+    : Repository<InformacionAcademica>,
+        IInformacionAcademicaRepository
 {
     private readonly EmpleosSurDBContext _context;
 
@@ -13,10 +15,12 @@ public class InformacionAcademicaRepository : Repository<InformacionAcademica>, 
         _context = context;
     }
 
-    public async Task<IEnumerable<InformacionAcademica>> GetInformacionAcademicaByCandidatoIdAsync(int candidatoId)
+    public async Task<IEnumerable<InformacionAcademica>> GetInformacionAcademicaByCandidatoIdAsync(
+        int candidatoId
+    )
     {
-        return await _context.InformacionesAcademicas
-            .Where(ia => ia.CandidatoId == candidatoId)
+        return await _context
+            .InformacionesAcademicas.Where(ia => ia.CandidatoId == candidatoId)
             .ToListAsync();
     }
 }
