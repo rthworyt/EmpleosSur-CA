@@ -207,7 +207,7 @@ namespace EmpleosSur.Tests.Repositories
                 Telefono = "8091234567",
                 Ciudad = "Santo Domingo",
                 Direccion = "Calle Principal 123",
-                Descripcion = "Desarrollador de software con 5 a�os de experiencia.",
+                Descripcion = "Desarrollador de software con 5 años de experiencia.",
                 FechaNacimiento = new DateTime(1985, 4, 23),
                 Genero = "Masculino",
                 InformacionesAcademicas = new List<InformacionAcademica>
@@ -243,14 +243,14 @@ namespace EmpleosSur.Tests.Repositories
                 Telefono = "8097654321",
                 Ciudad = "Santo Domingo",
                 Direccion = "Avenida Central 456",
-                Descripcion = "Analista de sistemas con 3 a�os de experiencia.",
+                Descripcion = "Analista de sistemas con 3 años de experiencia.",
                 FechaNacimiento = new DateTime(1990, 7, 15),
                 Genero = "Femenino",
                 InformacionesAcademicas = new List<InformacionAcademica>
                 {
                     new InformacionAcademica
                     {
-                        TituloObtenido = "Licenciada en Inform�tica",
+                        TituloObtenido = "Licenciada en Informática",
                         Institucion = "Universidad XYZ",
                         Nivel = NivelAcademico.Universitario,
                         FechaInicio = new DateTime(2008, 8, 1),
@@ -266,7 +266,7 @@ namespace EmpleosSur.Tests.Repositories
                         Cargo = "Analista de Sistemas",
                         FechaInicio = new DateTime(2013, 1, 1),
                         FechaFin = new DateTime(2016, 1, 1),
-                        Descripcion = "An�lisis y dise�o de sistemas"
+                        Descripcion = "Análisis y diseño de sistemas"
                     }
                 }
             };
@@ -279,15 +279,15 @@ namespace EmpleosSur.Tests.Repositories
                 Telefono = "8099876543",
                 Ciudad = "La Vega",
                 Direccion = "Calle Secundaria 789",
-                Descripcion = "Ingeniero de software con 7 a�os de experiencia.",
+                Descripcion = "Ingeniero de software con 7 años de experiencia.",
                 FechaNacimiento = new DateTime(1988, 11, 30),
                 Genero = "Masculino",
                 InformacionesAcademicas = new List<InformacionAcademica>
                 {
                     new InformacionAcademica
                     {
-                        TituloObtenido = "Ingeniero en Computaci�n",
-                        Institucion = "Instituto Tecnol�gico",
+                        TituloObtenido = "Ingeniero en Computación",
+                        Institucion = "Instituto Tecnológico",
                         Nivel = NivelAcademico.Universitario,
                         FechaInicio = new DateTime(2005, 8, 1),
                         FechaFin = new DateTime(2009, 5, 1),
@@ -302,7 +302,7 @@ namespace EmpleosSur.Tests.Repositories
                         Cargo = "Ingeniero de Software",
                         FechaInicio = new DateTime(2011, 1, 1),
                         FechaFin = new DateTime(2018, 1, 1),
-                        Descripcion = "Desarrollo de soluciones tecnol�gicas"
+                        Descripcion = "Desarrollo de soluciones tecnológicas"
                     }
                 }
             };
@@ -312,8 +312,9 @@ namespace EmpleosSur.Tests.Repositories
 
             var result = await _repository.GetCandidatoByCiudad("Santo Domingo");
 
-            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(2, result.Count()); // Ahora esperamos que se devuelvan 2 candidatos
             Assert.IsTrue(result.Any(c => c.Nombre == "Pedro"));
+            Assert.IsTrue(result.Any(c => c.Nombre == "Laura"));
         }
     }
 }
