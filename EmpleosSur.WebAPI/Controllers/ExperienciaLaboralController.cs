@@ -26,18 +26,18 @@ namespace EmpleosSur.WebAPI.Controllers
             _fakeDataGenerator = fakeDataGenerator;
         }
 
-        // GET - Generar experiencias laborales aleatorias
-        [HttpGet("GeneraFakeExperienciasLaborales")]
-        public async Task<IActionResult> GenerateFakeExperienciasLaborales(int count = 10)
-        {
-            await _fakeDataGenerator.GenerateFakeExperienciasLaborales(count);
-            return Ok(
-                new
-                {
-                    message = $"{count} experiencias laborales generadas correctamente en la base de datos."
-                }
-            );
-        }
+        //// GET - Generar experiencias laborales aleatorias
+        //[HttpGet("GeneraFakeExperienciasLaborales")]
+        //public async Task<IActionResult> GenerateFakeExperienciasLaborales(int count = 10)
+        //{
+        //    await _fakeDataGenerator.GenerateFakeExperienciasLaborales(count);
+        //    return Ok(
+        //        new
+        //        {
+        //            message = $"{count} experiencias laborales generadas correctamente en la base de datos."
+        //        }
+        //    );
+        //}
 
         // POST
         [HttpPost("CreateExperienciaLaboral")]

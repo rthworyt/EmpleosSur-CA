@@ -26,15 +26,15 @@ namespace EmpleosSur.WebAPI.Controllers
             _fakeDataGenerator = fakeDataGenerator;
         }
 
-        // GET - Generar empleos aleatorios
-        [HttpGet("GeneraFakeEmpleos")]
-        public async Task<IActionResult> GenerateFakeEmpleos(int count = 10)
-        {
-            await _fakeDataGenerator.GenerateFakeEmpleos(count);
-            return Ok(
-                new { message = $"{count} empleos generados correctamente en la base de datos." }
-            );
-        }
+        //// GET - Generar empleos aleatorios
+        //[HttpGet("GeneraFakeEmpleos")]
+        //public async Task<IActionResult> GenerateFakeEmpleos(int count = 10)
+        //{
+        //    await _fakeDataGenerator.GenerateFakeEmpleos(count);
+        //    return Ok(
+        //        new { message = $"{count} empleos generados correctamente en la base de datos." }
+        //    );
+        //}
 
         // POST
         [HttpPost("CreateEmpleo")]
@@ -70,16 +70,16 @@ namespace EmpleosSur.WebAPI.Controllers
             return Ok(new { message = "Empleo encontrado correctamente.", data = empleoDTO });
         }
 
-        // GET
-        [HttpGet("GetAllEmpleos")]
-        public async Task<ActionResult<IEnumerable<EmpleoReadOnlyDTO>>> GetAllEmpleos()
-        {
-            var empleos = await _empleoService.GetAllEmpleosAsync();
-            var empleosDTO = _mapper.Map<IEnumerable<EmpleoReadOnlyDTO>>(empleos);
-            return Ok(
-                new { message = "Lista de empleos obtenida correctamente.", data = empleosDTO }
-            );
-        }
+        //// GET
+        //[HttpGet("GetAllEmpleos")]
+        //public async Task<ActionResult<IEnumerable<EmpleoReadOnlyDTO>>> GetAllEmpleos()
+        //{
+        //    var empleos = await _empleoService.GetAllEmpleosAsync();
+        //    var empleosDTO = _mapper.Map<IEnumerable<EmpleoReadOnlyDTO>>(empleos);
+        //    return Ok(
+        //        new { message = "Lista de empleos obtenida correctamente.", data = empleosDTO }
+        //    );
+        //}
 
         // PUT
         [HttpPut("UpdateEmpleo")]

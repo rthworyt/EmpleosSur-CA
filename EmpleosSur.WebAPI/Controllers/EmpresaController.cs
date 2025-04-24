@@ -26,15 +26,15 @@ namespace EmpleosSur.WebAPI.Controllers
             _fakeDataGenerator = fakeDataGenerator;
         }
 
-        // GET - Generar empresas aleatorias
-        [HttpGet("GeneraFakeEmpresas")]
-        public async Task<IActionResult> GenerateFakeEmpresas(int count = 10)
-        {
-            await _fakeDataGenerator.GenerateFakeEmpresas(count);
-            return Ok(
-                new { message = $"{count} empresas generadas correctamente en la base de datos." }
-            );
-        }
+        //// GET - Generar empresas aleatorias
+        //[HttpGet("GeneraFakeEmpresas")]
+        //public async Task<IActionResult> GenerateFakeEmpresas(int count = 10)
+        //{
+        //    await _fakeDataGenerator.GenerateFakeEmpresas(count);
+        //    return Ok(
+        //        new { message = $"{count} empresas generadas correctamente en la base de datos." }
+        //    );
+        //}
 
         // POST
         [HttpPost("CreateEmpresa")]
@@ -111,7 +111,7 @@ namespace EmpleosSur.WebAPI.Controllers
                 return NotFound(new { message = "Empresa no encontrada." });
             }
 
-            _mapper.Map(empresaDTO, empresa); // Mapear los cambios a la entidad existente
+            _mapper.Map(empresaDTO, empresa); 
             await _empresaService.UpdateAsync(empresa);
 
             var updatedEmpresaDTO = _mapper.Map<EmpresaReadOnlyDTO>(empresa);

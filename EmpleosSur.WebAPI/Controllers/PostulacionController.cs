@@ -26,18 +26,18 @@ namespace EmpleosSur.WebAPI.Controllers
             _fakeDataGenerator = fakeDataGenerator;
         }
 
-        // GET - Generar postulaciones aleatorias
-        [HttpGet("GeneraFakePostulaciones")]
-        public async Task<IActionResult> GenerateFakePostulaciones(int count = 10)
-        {
-            await _fakeDataGenerator.GenerateFakePostulaciones(count);
-            return Ok(
-                new
-                {
-                    message = $"{count} postulaciones generadas correctamente en la base de datos."
-                }
-            );
-        }
+        //// GET - Generar postulaciones aleatorias
+        //[HttpGet("GeneraFakePostulaciones")]
+        //public async Task<IActionResult> GenerateFakePostulaciones(int count = 10)
+        //{
+        //    await _fakeDataGenerator.GenerateFakePostulaciones(count);
+        //    return Ok(
+        //        new
+        //        {
+        //            message = $"{count} postulaciones generadas correctamente en la base de datos."
+        //        }
+        //    );
+        //}
 
         // GET by CandidatoId
         [HttpGet("GetPostulacionesByCandidatoId")]
