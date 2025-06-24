@@ -1,12 +1,13 @@
-using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Application.Interfaces;
+using EmpleosSur.Application.Interfaces.IRepositories;
+using EmpleosSur.Application.Interfaces.IServices;
 using EmpleosSur.Application.Services;
+using EmpleosSur.Core.Interfaces;
 using EmpleosSur.Infraestructure.Data;
 using EmpleosSur.Infraestructure.Repositories;
+using EmpleosSur.WebAPI.Generators;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
-using EmpleosSur.WebAPI.Generators;
-using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +27,10 @@ builder.Services.AddSwaggerGen();
 
 // Configuración de la base de datos
 builder.Services.AddDbContext<EmpleosSurDBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    sqlOptions => sqlOptions.EnableRetryOnFailure())
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    )
 );
 
 // Inyección de dependencias
@@ -35,9 +38,23 @@ builder.Services.AddScoped<FakeDataGenerator>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+builder.Services.AddScoped<ICandidatoRepository, CandidatoRepository>();
 builder.Services.AddScoped<ICandidatoService, CandidatoService>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+
+builder.Services.AddScoped<IEmpleoService, EmpleoService>();
+builder.Services.AddScoped<IEmpleoRepository, EmpleoRepository>();
+
+builder.Services.AddScoped<IExperienciaLaboralService, ExperienciaLaboralService>();
+builder.Services.AddScoped<IExperienciaLaboralRepository, ExperienciaLaboralRepository>();
+
+builder.Services.AddScoped<IInformacionAcademicaService, InformacionAcademicaService>();
+builder.Services.AddScoped<IInformacionAcademicaRepository, InformacionAcademicaRepository>();
+
+builder.Services.AddScoped<IPostulacionService, PostulacionService>();
+builder.Services.AddScoped<IPostulacionRepository, PostulacionRepository>();
 
 var app = builder.Build();
 

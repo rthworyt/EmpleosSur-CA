@@ -33,7 +33,6 @@ public class CandidatoRepository : Repository<Candidato>, ICandidatoRepository
 
     public async Task<IEnumerable<Candidato>> GetCandidatoByCiudad(string ciudad)
     {
-        return await _context
-            .Candidatos.Where(c => c.Ciudad == ciudad).ToListAsync();
+        return await _context.Candidatos.Where(c => c.Ciudad == ciudad).ToListAsync();
     }
 }

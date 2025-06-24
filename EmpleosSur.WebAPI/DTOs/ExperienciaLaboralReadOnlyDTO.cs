@@ -18,6 +18,6 @@ namespace EmpleosSur.WebAPI.DTOs
 
         public bool EnCurso { get; set; }
 
-        public CandidatoReadOnlyDTO Candidato { get; set; }
+        public required CandidatoReadOnlyDTO Candidato { get; set; }
     }
 }

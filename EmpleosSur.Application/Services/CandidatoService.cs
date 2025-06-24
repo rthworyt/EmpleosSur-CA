@@ -1,6 +1,5 @@
 ﻿using EmpleosSur.Application.Interfaces.IRepositories;
 using EmpleosSur.Application.Interfaces.IServices;
-using EmpleosSur.Application.Services;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.Domain.Helpers;
 
@@ -14,14 +13,19 @@ public class CandidatoService : Service<Candidato>, ICandidatoService
         _candidatoRepository = candidatoRepository;
     }
 
-    public async Task<Candidato> GetCandidatoById(int id)
+    public async Task<Candidato> GetAllDataCandidatoById(int id)
     {
-        return await _candidatoRepository.GetByIdAsync(id);
+        return await _candidatoRepository.GetAllDataCandidatoById(id);
     }
 
     public async Task<Candidato> GetCandidatoByEmail(string email)
     {
         return await _candidatoRepository.GetCandidatoByEmail(email);
+    }
+
+    public async Task<IEnumerable<Candidato>> GetCandidatoByCiudad(string ciudad)
+    {
+        return await _candidatoRepository.GetCandidatoByCiudad(ciudad);
     }
 
     public async Task<OperationResult> CreateCandidato(Candidato candidato)
@@ -39,7 +43,7 @@ public class CandidatoService : Service<Candidato>, ICandidatoService
 
     public async Task<OperationResult> DeleteCandidato(int id)
     {
-        var candidato = await GetCandidatoById(id);
+        var candidato = await GetByIdAsync(id);
         if (candidato == null)
             return OperationResult.Failure("El candidato no existe.");
 
@@ -51,10 +55,5 @@ public class CandidatoService : Service<Candidato>, ICandidatoService
     {
         await _candidatoRepository.UpdateAsync(candidato);
         return OperationResult.SuccessResult();
-    }
-
-    public async Task<Candidato> GetAllDataCandidatoById(int id)
-    {
-        return await _candidatoRepository.GetAllDataCandidatoById(id);
     }
 }

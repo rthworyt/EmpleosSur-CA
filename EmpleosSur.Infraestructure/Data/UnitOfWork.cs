@@ -1,5 +1,5 @@
 ﻿using EmpleosSur.Application.Interfaces;
-using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Application.Interfaces.IRepositories;
 using EmpleosSur.Domain.Entities;
 using EmpleosSur.Infraestructure.Data;
 

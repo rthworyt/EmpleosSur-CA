@@ -1,12 +1,7 @@
-﻿using EmpleosSur.Domain.Entities;
+﻿using EmpleosSur.Application.Interfaces.IRepositories;
+using EmpleosSur.Domain.Entities;
 
-namespace EmpleosSur.Core.Interfaces
+public interface IInformacionAcademicaRepository : IRepository<InformacionAcademica>
 {
-    public interface IInformacionAcademicaRepository
-    {
-        Task AddInformacionAcademicaAsync(InformacionAcademica informacionAcademica);
-        Task UpdateInformacionAcademicaAsync(InformacionAcademica informacionAcademica);
-        Task DeleteInformacionAcademicaAsync(int id);
-        Task<IEnumerable<InformacionAcademica>> GetInformacionAcademicaByCandidatoIdAsync(int candidatoId);
-    }
+    Task<IEnumerable<InformacionAcademica>> GetInformacionAcademicaByCandidatoIdAsync(int candidatoId);
 }

@@ -35,8 +35,12 @@ namespace EmpleosSur.WebAPI.DTOs
         public string Telefono { get; set; }
 
         [Required(ErrorMessage = "El RNC es obligatorio.")]
-        [StringLength(11, MinimumLength = 11, ErrorMessage = "El RNC debe tener 11 caracteres.")]
+        [StringLength(9, MinimumLength = 9, ErrorMessage = "El RNC debe tener 9 caracteres.")]
         public string RNC { get; set; }
+
+        [Required(ErrorMessage = "La ciudad es obligatoria.")]
+        [StringLength(100, ErrorMessage = "La ciudad no puede exceder los 100 caracteres.")]
+        public string Ciudad { get; set; }
 
         [Required(ErrorMessage = "La dirección es obligatoria.")]
         [StringLength(200, ErrorMessage = "La dirección no puede exceder los 200 caracteres.")]
@@ -45,8 +49,8 @@ namespace EmpleosSur.WebAPI.DTOs
         [Required(ErrorMessage = "La cédula del representante es obligatoria.")]
         [StringLength(
             11,
-            MinimumLength = 11,
-            ErrorMessage = "La cédula del representante debe tener 11 caracteres."
+            MinimumLength = 10,
+            ErrorMessage = "La cédula del representante debe tener 10 caracteres."
         )]
         public string CedulaRepresentante { get; set; }
 

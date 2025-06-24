@@ -15,7 +15,7 @@ namespace EmpleosSur.Infraestructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Empleo>> GetByEmpresaAsync(int empresa)
+        public async Task<IEnumerable<Empleo>> GetEmpleosByEmpresaIdAsync(int empresa)
         {
             return await _context.Empleos.Where(e => e.EmpresaId == empresa).ToListAsync();
         }
@@ -28,9 +28,11 @@ namespace EmpleosSur.Infraestructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Empleo>> GetByTituloAsync(string titulo)
+        public async Task<IEnumerable<Empleo>> GetEmpleosByTituloAsync(string titulo)
         {
-            return await _context.Empleos.Where(e => e.Titulo.Contains(titulo)).ToListAsync();
+            return await _context
+                .Empleos.Where(e => EF.Functions.Like(e.Titulo.ToLower(), $"%{titulo.ToLower()}%"))
+                .ToListAsync();
         }
 
         public async Task<List<Empleo>> GetAllEmpleosAsync()

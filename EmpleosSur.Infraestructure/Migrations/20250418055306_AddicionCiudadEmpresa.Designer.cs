@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmpleosSur.Infraestructure.Migrations
 {
     [DbContext(typeof(EmpleosSurDBContext))]
-    [Migration("20250411001018_Modificacion_Entidades")]
-    partial class Modificacion_Entidades
+    [Migration("20250418055306_AddicionCiudadEmpresa")]
+    partial class AddicionCiudadEmpresa
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,11 @@ namespace EmpleosSur.Infraestructure.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
+                    b.Property<string>("Ciudad")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Direccion")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -157,8 +162,8 @@ namespace EmpleosSur.Infraestructure.Migrations
 
                     b.Property<string>("RNC")
                         .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
+                        .HasMaxLength(9)
+                        .HasColumnType("nvarchar(9)");
 
                     b.Property<string>("RegistroMercantil")
                         .HasMaxLength(100)

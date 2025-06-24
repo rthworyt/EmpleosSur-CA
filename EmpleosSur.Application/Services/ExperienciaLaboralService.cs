@@ -1,36 +1,25 @@
 ﻿using EmpleosSur.Application.Interfaces.IServices;
+using EmpleosSur.Core.Interfaces;
+using EmpleosSur.Application.Interfaces.IRepositories;
 using EmpleosSur.Domain.Entities;
 
 namespace EmpleosSur.Application.Services
 {
-    public class ExperienciaLaboralService
+    public class ExperienciaLaboralService : Service<ExperienciaLaboral>, IExperienciaLaboralService
     {
-        private readonly IRepository<ExperienciaLaboral> _experienciaRepository;
-        public ExperienciaLaboralService(IRepository<ExperienciaLaboral> experienciaRepository)
+        private readonly IExperienciaLaboralRepository _experienciaLaboralRepository;
+
+        public ExperienciaLaboralService(
+            IRepository<ExperienciaLaboral> repository,
+            IExperienciaLaboralRepository experienciaLaboralRepository)
+            : base(repository)
         {
-            _experienciaRepository = experienciaRepository;
+            _experienciaLaboralRepository = experienciaLaboralRepository;
         }
-        public async Task AddExperienciaAsync(ExperienciaLaboral experiencia)
-        {
-            await _experienciaRepository.CreateAsync(experiencia);
-        }
-        public async Task<bool> DeleteExperienciaAsync(int experienciaId)
-        {
-            var experiencia = await GetExpByCandidatoIdAsync(experienciaId);
-            if (experiencia == null)
-            {
-                return false;
-            }
-            await _experienciaRepository.DeleteAsync(experienciaId);
-            return true;
-        }
+
         public async Task<IEnumerable<ExperienciaLaboral>> GetExpByCandidatoIdAsync(int candidatoId)
         {
-            return await _experienciaRepository.GetAllAsync(e => ((ExperienciaLaboral)e).CandidatoId == candidatoId);
-        }
-        public async Task UpdateExperienciaAsync(ExperienciaLaboral experiencia)
-        {
-            await _experienciaRepository.UpdateAsync(experiencia);
+            return await _experienciaLaboralRepository.GetExperienciaByCandidatoIdAsync(candidatoId);
         }
     }
 }

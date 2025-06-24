@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EmpleosSur.WebAPI.DTOs
 {
@@ -15,6 +16,8 @@ namespace EmpleosSur.WebAPI.DTOs
         public string Telefono { get; set; }
 
         public string RNC { get; set; }
+
+        public string Ciudad { get; set; }
 
         public string Direccion { get; set; }
 

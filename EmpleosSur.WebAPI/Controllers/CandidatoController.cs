@@ -5,112 +5,174 @@ using EmpleosSur.WebAPI.DTOs;
 using EmpleosSur.WebAPI.Generators;
 using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-public class CandidatosController : ControllerBase
+namespace EmpleosSur.WebAPI.Controllers
 {
-    private readonly ICandidatoService _candidatoService;
-    private readonly IMapper _mapper;
-    private readonly FakeDataGenerator _fakeDataGenerator;
-
-    public CandidatosController(
-        ICandidatoService candidatoService,
-        IMapper mapper,
-        FakeDataGenerator fakeDataGenerator
-    )
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CandidatosController : ControllerBase
     {
-        _candidatoService = candidatoService;
-        _mapper = mapper;
-        _fakeDataGenerator = fakeDataGenerator;
-    }
+        private readonly ICandidatoService _candidatoService;
+        private readonly IMapper _mapper;
+        private readonly FakeDataGenerator _fakeDataGenerator;
 
-    [HttpGet("GeneraDatosAleatorios")]
-    public async Task<IActionResult> GenerateFakeCandidatos(int count = 10)
-    {
-        await _fakeDataGenerator.GenerateFakeCandidatos(count);
-        return Ok(
-            new { message = $"{count} candidatos generados correctamente en la base de datos." }
-        );
-    }
-
-    // GET
-    [HttpGet("email/{email}")]
-    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
-    {
-        var candidato = await _candidatoService.GetCandidatoByEmailAsync(email);
-
-        if (candidato == null)
+        public CandidatosController(
+            ICandidatoService candidatoService,
+            IMapper mapper,
+            FakeDataGenerator fakeDataGenerator
+        )
         {
-            return NotFound();
+            _candidatoService = candidatoService;
+            _mapper = mapper;
+            _fakeDataGenerator = fakeDataGenerator;
         }
 
-        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
-        return Ok(candidatoDTO);
-    }
-
-    // GET
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoById(int id)
-    {
-        var candidato = await _candidatoService.GetCandidatoByIdAsync(id);
-
-        if (candidato == null)
+        // GET por Id
+        [HttpGet("GetCandidatoById")]
+        public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoById(int id)
         {
-            return NotFound();
+            if (id <= 0)
+            {
+                return BadRequest(new { message = "ID inválido." });
+            }
+
+            var candidato = await _candidatoService.GetAllDataCandidatoById(id);
+
+            if (candidato == null)
+            {
+                return NotFound(new { message = "Candidato no encontrado." });
+            }
+
+            var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
+            return Ok(candidatoDTO);
         }
 
-        var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
-        return Ok(candidatoDTO);
-    }
-
-    // POST
-    [HttpPost]
-    public async Task<ActionResult<CandidatoDTO>> CreateCandidato(CandidatoDTO candidatoDTO)
-    {
-        if (!ModelState.IsValid)
+        // GET por email
+        [HttpGet("GetCandidatoByEmail")]
+        public async Task<ActionResult<CandidatoReadOnlyDTO>> GetCandidatoByEmail(string email)
         {
-            return BadRequest(ModelState);
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest(new { message = "El correo no puede estar vacío." });
+            }
+
+            var candidato = await _candidatoService.GetCandidatoByEmail(email);
+
+            if (candidato == null)
+            {
+                return NotFound(new { message = "Candidato no encontrado con ese email." });
+            }
+
+            var candidatoDTO = _mapper.Map<CandidatoReadOnlyDTO>(candidato);
+            return Ok(candidatoDTO);
         }
 
-        var candidato = _mapper.Map<Candidato>(candidatoDTO);
-        var result = await _candidatoService.CreateCandidatoAsync(candidato);
-
-        if (!result.Success)
+        // GET por ciudad
+        [HttpGet("GetCandidatosByCiudad")]
+        public async Task<ActionResult<IEnumerable<CandidatoReadOnlyDTO>>> GetCandidatosByCiudad(
+            string ciudad
+        )
         {
-            return BadRequest(result.ErrorMessage);
+            if (string.IsNullOrEmpty(ciudad))
+            {
+                return BadRequest(new { message = "La ciudad no puede estar vacía." });
+            }
+
+            var candidatos = await _candidatoService.GetCandidatoByCiudad(ciudad);
+
+            if (candidatos == null || !candidatos.Any())
+            {
+                return NotFound(new { message = "No se encontraron candidatos en esa ciudad." });
+            }
+
+            var candidatosDTO = _mapper.Map<IEnumerable<CandidatoReadOnlyDTO>>(candidatos);
+            return Ok(candidatosDTO);
         }
 
-        var newCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
-        return CreatedAtAction(
-            nameof(GetCandidatoById),
-            new { id = candidato.Id },
-            newCandidatoDTO
-        );
-    }
-
-    // PUT
-    [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCandidato(int id, CandidatoDTO candidatoDTO)
-    {
-        if (id == 0 || candidatoDTO == null)
+        // POST - Crear candidato
+        [HttpPost("CreateCandidato")]
+        public async Task<ActionResult<CandidatoDTO>> CreateCandidato(CandidatoDTO candidatoDTO)
         {
-            return BadRequest("Id o datos inválidos.");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(
+                    new
+                    {
+                        message = "Los datos proporcionados no son válidos.",
+                        errors = ModelState
+                    }
+                );
+            }
+
+            var candidato = _mapper.Map<Candidato>(candidatoDTO);
+            var result = await _candidatoService.CreateCandidato(candidato);
+
+            if (!result.Success)
+            {
+                return BadRequest(
+                    new { message = "No se pudo crear el candidato.", error = result.ErrorMessage }
+                );
+            }
+
+            var newCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
+            return CreatedAtAction(
+                nameof(GetCandidatoById),
+                new { id = candidato.Id },
+                new { message = "Candidato creado correctamente.", data = newCandidatoDTO }
+            );
         }
 
-        var candidato = _mapper.Map<Candidato>(candidatoDTO);
-        candidato.Id = id;
+        // PUT - Actualizar candidato
+        [HttpPut("UpdateCandidato")]
+        public async Task<ActionResult> UpdateCandidato(int id, CandidatoDTO candidatoDTO)
+        {
+            if (id <= 0 || candidatoDTO == null)
+            {
+                return BadRequest(new { message = "ID o datos inválidos." });
+            }
 
-        await _candidatoService.UpdateCandidatoAsync(candidato);
+            var candidato = _mapper.Map<Candidato>(candidatoDTO);
+            candidato.Id = id;
 
-        var updatedCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
-        return Ok(updatedCandidatoDTO);
-    }
+            var result = await _candidatoService.UpdateCandidato(candidato);
 
-    // DELETE
-    [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteCandidato(int id)
-    {
-        await _candidatoService.DeleteCandidatoAsync(id);
-        return Ok(new { message = "Candidato eliminado correctamente." });
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+
+            var updatedCandidatoDTO = _mapper.Map<CandidatoDTO>(candidato);
+            return Ok(
+                new { message = "Candidato actualizado correctamente.", data = updatedCandidatoDTO }
+            );
+        }
+
+        // DELETE - Eliminar candidato
+        [HttpDelete("DeleteCandidato")]
+        public async Task<ActionResult> DeleteCandidato(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest(new { message = "ID inválido." });
+            }
+
+            var result = await _candidatoService.DeleteCandidato(id);
+
+            if (!result.Success)
+            {
+                return BadRequest(new { message = result.ErrorMessage });
+            }
+
+            return Ok(new { message = "Candidato eliminado correctamente." });
+        }
+
+        //// GET - Generar datos aleatorios
+        //[HttpGet("GeneraDatosAleatorios")]
+        //public async Task<IActionResult> GenerateFakeCandidatos(int count = 10)
+        //{
+        //    await _fakeDataGenerator.GenerateFakeCandidatos(count);
+        //    return Ok(
+        //        new { message = $"{count} candidatos generados correctamente en la base de datos." }
+        //    );
+        //}
     }
 }

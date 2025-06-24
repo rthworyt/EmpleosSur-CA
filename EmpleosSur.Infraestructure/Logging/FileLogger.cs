@@ -14,13 +14,14 @@ public class FileLogger : ILogger
     }
 
     public IDisposable BeginScope<TState>(TState state) => null!;
+
     public bool IsEnabled(LogLevel logLevel) => true;
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId,
-        TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         var logRecord = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [{logLevel}] {_category} - {formatter(state, exception)}";
 
+        // Escribe el log en el archivo
         using (var writer = new StreamWriter(_filePath, append: true))
         {
             writer.WriteLine(logRecord);
